@@ -18,6 +18,7 @@ public class App {
 				+ BLACK.encodedColor()
 		);
 
+		long start = System.currentTimeMillis();
 		try (ExecutorService executorService = Executors.newFixedThreadPool(2)) {
 			MessageSystem messageSystem = MessageSystem.instance();
 			executorService.submit(messageSystem::publish);
@@ -30,9 +31,10 @@ public class App {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		} finally {
+			long end = System.currentTimeMillis();
 			System.out.printf(ORANGE.encodedColor()
 					+ "================== Finished in %.3f seconds, See you later ==============="
-					+ BLACK.encodedColor(), timeout * 1.0f / 1000);
+					+ BLACK.encodedColor(), (end - start) * 1.0f / 1000);
 		}
 	}
 
