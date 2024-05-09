@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn clean package && clear && java -jar target/message-system-1.0-SNAPSHOT.jar
+mvn clean package && clear && java -jar target/message-system-1.0-SNAPSHOT.jar 4000

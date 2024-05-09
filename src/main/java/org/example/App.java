@@ -11,8 +11,10 @@ import static org.example.COLOR.ORANGE;
  * Hello world!
  */
 public class App {
+	private static final long DEFAULT_TIMEOUT = 2_000L;
+
+
 	public static void main(String[] args) {
-		long timeout = 2_000L;
 		System.out.println(ORANGE.encodedColor() +
 				"================== Message System - Java Multithreading using wait(), notify() ==============="
 				+ BLACK.encodedColor()
@@ -24,7 +26,7 @@ public class App {
 			executorService.submit(messageSystem::publish);
 			executorService.submit(messageSystem::subscribe);
 
-			if (!executorService.awaitTermination(timeout, TimeUnit.MILLISECONDS)) {
+			if (!executorService.awaitTermination(timeout(args), TimeUnit.MILLISECONDS)) {
 				messageSystem.stop();
 			}
 		} catch (InterruptedException e) {
@@ -38,5 +40,11 @@ public class App {
 		}
 	}
 
+	private static long timeout(String input[]) {
+		if (null != input && input.length == 1) {
+			return Long.parseLong(input[0]);
+		}
+		return DEFAULT_TIMEOUT;
+	}
 
 }
