@@ -1,7 +1,56 @@
 package org.example;
 
+import static org.example.COLOR.*;
+
 public class MessageSystem {
-	private MessageSystem() {}
+
+	private boolean consumable = false;
+	private boolean stop;
+
+	public void stop() {
+		stop = true;
+	}
+
+	public void publish() {
+		try {
+
+			synchronized (this) {
+				while (!stop) {
+					while (consumable) {
+						wait();
+					}
+					System.out.println();
+					System.out.println(GREEN.encodedColor() + " ... Publishing ..." + BLACK.encodedColor());
+					consumable = !consumable;
+					notify();
+				}
+			}
+		} catch (InterruptedException interruptedException) {
+			interruptedException.printStackTrace();
+		}
+	}
+
+	public void subscribe() {
+		try {
+			synchronized (this) {
+				while (!stop) {
+					while (!consumable) {
+						wait();
+					}
+					System.out.println();
+					System.out.println(RED.encodedColor() + " ... Consuming ..." + BLACK.encodedColor());
+					consumable = !consumable;
+					Thread.sleep(800L);
+					notify();
+				}
+			}
+		} catch (InterruptedException interruptedException) {
+			interruptedException.printStackTrace();
+		}
+	}
+
+	private MessageSystem() {
+	}
 
 	public static MessageSystem instance() {
 		return SingleTon.INSTANCE;
@@ -11,37 +60,4 @@ public class MessageSystem {
 		private static final MessageSystem INSTANCE = new MessageSystem();
 	}
 
-	private boolean consumable = false;
-	private static final String GREEN = "\u001B[32m";
-	private static final String RED = "\u001B[31m";
-	private static final String RESET = "\u001B[0m";
-
-	public void publish() throws InterruptedException {
-		synchronized (this) {
-			while (true) {
-				while (consumable) {
-					wait();
-				}
-				System.out.println();
-				System.out.println(GREEN + " ... Publishing ..." + RESET);
-				consumable = !consumable;
-				Thread.sleep(1000L);
-				notify();
-			}
-		}
-	}
-
-	public void subscribe() throws InterruptedException {
-		synchronized (this) {
-			while (true) {
-				while (!consumable) {
-					wait();
-				}
-				System.out.println();
-				System.out.println(RED + " ... Consuming ..." + RESET);
-				consumable = !consumable;
-				notify();
-			}
-		}
-	}
 }
